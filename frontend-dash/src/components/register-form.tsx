@@ -8,10 +8,12 @@ import React from "react";
 
 export function RegisterForm() {
 
-  // Estado para manejar la respuesta de la imagen QR
-  const [qrImage, setQrImage] = useState(null);  // Aquí guardamos la URL o la imagen en sí
-  const [loading, setLoading] = useState(true);  // Para manejar el estado de carga
-  const [error, setError] = useState(null);  // Para manejar errores de la solicitud
+  // Estado para manejar la imagen QR
+  const [qrImage, setQrImage] = useState(null);  // Aquí guardamos la URL de la imagen QR
+  const [loadingQr, setLoadingQr] = useState(false);  // Para manejar el estado de carga del QR
+  const [errorQr, setErrorQr] = useState(null);  // Para manejar errores en la carga del QR
+  const [creationSuccess, setCreationSuccess] = useState(false);  // Estado para indicar si la creación fue exitosa
+  const [loading, setLoading] = useState(false);  // Para manejar el estado de carga del formulario
 
    // Definir el estado para las variables del formulario
    const [adminUsername, setAdminUsername] = useState('');
@@ -24,37 +26,10 @@ export function RegisterForm() {
    const [newUsernameError, setNewUsernameError] = useState('');
    const [newPasswordError, setNewPasswordError] = useState('');
 
-  // Esta función simula una petición al servidor para obtener la imagen QR
-  useEffect(() => {
-    // Simulamos que la imagen QR se genera luego de un evento o acción
-    const fetchQrImage = async () => {
-      try {
-        setLoading(true);
-        // Simulamos una petición para obtener la imagen (puedes reemplazar esto con tu endpoint real)
-        const response = await fetch('/api/get-qr-image');  // Reemplazar con la URL real de tu API
 
-        if (!response.ok) {
-          throw new Error('Error al obtener la imagen QR');
-        }
-
-        const qrImageUrl = await response.text();  // Asumimos que el servidor responde con una URL de imagen
-        setQrImage(qrImageUrl);  // Guardamos la URL de la imagen
-        setLoading(false);
-      } catch (err) {
-        setError('QR no disponible.');
-        setLoading(false);
-      }
-    };
-
-    fetchQrImage();
-  }, []);
-
-
- 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setLoading(true);
     // Validación simple (puedes expandirla según lo necesites)
     let isValid = true;
 
@@ -87,15 +62,54 @@ export function RegisterForm() {
     }
 
     if (isValid) {
-      // Aquí puedes agregar la lógica para enviar los datos
-      console.log({
-        adminUsername,
-        adminPassword,
-        newUsername,
-        newPassword,
-      });
+      // Simula la creación del usuario en reqres.in
+        try {
+            const response = await fetch('https://reqres.in/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: newUsername,  // En reqres.in, los campos son name, job, etc.
+                job: 'developer',
+            }),
+            });
+    
+            if (!response.ok) {
+            throw new Error('Error al crear el usuario');
+            }
+    
+            // Si la creación fue exitosa, cambiar el estado y proceder a obtener el QR
+            setCreationSuccess(true);
+            setLoading(false);
+            
+            // Ahora hacemos la petición para obtener la imagen QR
+            fetchQrImage();
+        } catch (err) {
+            setLoading(false);
+            console.error('Error durante la creación:', err);
+        }
     }
   };
+
+  const fetchQrImage = async () => {
+    setLoadingQr(true);
+    try {
+      // Usamos un servicio de ejemplo para generar el QR, reemplaza con tu lógica de servidor real
+      const response = await fetch('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=HelloWorld');
+      if (!response.ok) {
+        throw new Error('Error al obtener la imagen QR');
+      }
+      
+      const qrImageUrl = await response.url;  // Usamos la URL de la imagen generada
+      setQrImage(qrImageUrl);  // Guardamos la URL de la imagen QR
+      setLoadingQr(false);
+    } catch (err) {
+      setErrorQr('No se pudo cargar la imagen QR');
+      setLoadingQr(false);
+    }
+  };
+
 
 
   return (
@@ -104,19 +118,20 @@ export function RegisterForm() {
             <CardTitle className="text-2xl text-black">Register</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Espacio para la imagen QR */}
-            
+            {/* Mostrar la imagen QR solo si la creación es exitosa */}
+            {creationSuccess && (
             <div className="flex justify-center">
-                {loading ? (
-                    <p>Loading QR Image...</p>
-                ) : error ? (
-                    <p className="text-red-500">{error}</p>
+                {loadingQr ? (
+                <p>Loading QR Image...</p>
+                ) : errorQr ? (
+                <p className="text-red-500">{errorQr}</p>
                 ) : qrImage ? (
-                    <img src={qrImage} alt="QR Code" className="w-32 h-32" />
+                <img src={qrImage} alt="QR Code" className="w-32 h-32" />
                 ) : (
-                    <p>No QR image available</p>
+                <p>No QR image available</p>
                 )}
             </div>
+            )}
             
             
             <CardContent className="space-y-4">

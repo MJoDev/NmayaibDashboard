@@ -4,24 +4,24 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import React from "react";
+import Cookies from "js-cookie"; // Para manejar las cookies
 
 export function LoginForm() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // Para manejar el mensaje de error
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Simple email validation
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!email.match(emailPattern)) {
-      setEmailError("Please enter a valid email address.");
+    // Validación simple del username (puedes agregar más validaciones si lo deseas)
+    if (username.length < 3) {
+      setUsernameError("Username must be at least 3 characters long.");
       return;
     } else {
-      setEmailError("");
+      setUsernameError("");
     }
 
     if (password.length < 6) {
@@ -31,8 +31,36 @@ export function LoginForm() {
       setPasswordError("");
     }
 
-    // Proceed with login logic
-    console.log("Login attempted with:", { email, password });
+    try {
+      // Peticion a reqres.in A cambiar. Lo envio como email ya que su API recibe es un email.
+      const response = await fetch("https://reqres.in/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: `${username}`,  // Usamos un correo ficticio con el username
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
+      // Si el login es exitoso, guarda el token en las cookies
+      const { token } = data;
+      Cookies.set("auth_token", token, { expires: 7 }); // Token guardado en las cookies por 7 días
+
+      // Redirige a la página principal o a la página protegida
+      window.location.href = "/dashboard"; // Cambia la URL de acuerdo a tu estructura de rutas
+
+    } catch (error: any) {
+      // Si hay un error, muestra el mensaje de error
+      setErrorMessage(error.message || "Invalid username or password.");
+    }
   };
 
   return (
@@ -43,17 +71,17 @@ export function LoginForm() {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">Username</Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
-              aria-describedby="email-error"
+              aria-describedby="username-error"
             />
-            {emailError && <p id="email-error" className="text-red-500 text-sm">{emailError}</p>}
+            {usernameError && <p id="username-error" className="text-red-500 text-sm">{usernameError}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -62,6 +90,7 @@ export function LoginForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
               required
               aria-describedby="password-error"
             />
@@ -72,10 +101,9 @@ export function LoginForm() {
           <Button type="submit" className="w-full">
             SIGN IN
           </Button>
+          {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
         </CardFooter>
       </form>
     </Card>
   );
 }
-
-
