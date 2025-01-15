@@ -7,7 +7,7 @@ import { Menu } from "lucide-react";
 
 const ProtectedLayout = ({ children }) => {
 const [loading, setLoading] = useState(true);  // State for initial loading
-const router = useRouter(); // New hook from next/navigation
+const router = useRouter(); 
 const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
 const handleSidebarToggle = () => {
@@ -32,7 +32,7 @@ if (loading) {
     )  // Show loading while checking
 }
   return (
-    <div className="w-full overflow-hidden transition-transform duration-300 ease-in-out">
+    <div className="w-screen h-screen overflow-x-hidden transition-transform duration-300 ease-in-out">
       <main className="overflow-hidden flex m-3">
 
       <button
@@ -42,13 +42,13 @@ if (loading) {
         <Menu></Menu>
       </button>
         <div
-        className={`transition-transform duration-300 ease-in-out 
+        className={`transition-transform duration-300 ease-in-out fixed
             ${isSidebarOpen ? 'translate-x-0' : 'translate-x-[-100%]'} `}
         >
             <Sidebar isOpen={isSidebarOpen}></Sidebar>
         </div>
         <div
-          className={`flex-1 transition-transform duration-300 ease-in-out m-14`}
+          className={`flex-1 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'ml-[225px]' : 'ml-0'}`}
         >
             {children}
         </div>

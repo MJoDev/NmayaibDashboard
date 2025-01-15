@@ -77,7 +77,7 @@ export function Chart({ title, value, percentage, data, labels }: ChartProps) {
           <Line options={options} data={chartData} />
         </div>
         <div className="mt-4 flex gap-2">
-          {["1d", "5d", "1m", "6m", "1y", "5d", "Max"].map((period) => (
+          {["1d", "5d", "1m", "6m", "1y", "5y", "Max"].map((period) => (
             <Button key={period} variant="outline" size="sm">
               {period}
             </Button>

@@ -13,7 +13,7 @@ import {
     client: string
     businessUnit: string
     rep: string
-    status: "ALTA" | "MEDIA"
+    status: "HIGH" | "MODERATE"
   }
   
   interface AlertsTableProps {
@@ -30,7 +30,7 @@ import {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>CLIENTE</TableHead>
+                <TableHead>CLIENT</TableHead>
                 <TableHead>BUSINESS UNIT</TableHead>
                 <TableHead>REP</TableHead>
                 <TableHead>STATUS</TableHead>
@@ -45,7 +45,7 @@ import {
                   <TableCell>
                     <span
                       className={`rounded px-2 py-1 text-xs font-medium
-                        ${alert.status === "ALTA" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
+                        ${alert.status === "HIGH" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
                     >
                       {alert.status}
                     </span>
