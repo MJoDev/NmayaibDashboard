@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# NMAYAIB DASHBOARD
 
-First, run the development server:
+Pedido personalizado de Fiverr, tiempo flexible.
+
+
+## Autor
+
+- [@MJoDev](https://github.com/MJoDev)
+
+
+## Deployment
+
+Para correr en modo de desarrollo ejecuta:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+  npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Para generar el build y luego la producción:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+  npm run build
+  npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Documentación
 
-To learn more about Next.js, take a look at the following resources:
+La estrutucta de los archivos es la siguiente:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### **`public/`**: 
+Carpeta que incluye archivos SVGs o públicos.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **`src/`**
+Directorio principal del proyecto que contiene el código fuente de la aplicación.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### **`app/`**
+Carpeta que gestiona las páginas principales del proyecto siguiendo la estructura de rutas de Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **`(sidebar)/`**: Subcarpeta que contiene páginas con un diseño que incluye una barra lateral.
+  - **`notAdmin/`**: Páginas y componentes destinados a usuarios no administradores.
+    - `/page.js`: Página del dashboard.
+    - `extras/page.js`: Pagina de configuración `extra`.
+  - **`admin/`**: Páginas y componentes dedicados al área de administración.
+    - `layout.js`: Diseño base para las páginas de administración.
+    - `page.js`: Página principal del área administrativa.
+- **`login/`**: Página de inicio de sesión.
+    - `page.js`: Contiene el formulario de inicio de sesión.
+- **`register/`**: Página de registro de nuevos usuarios.
+    - `page.js`: Contiene el formulario de registro.
+
+---
+
+### **`components/`**
+Directorio que incluye todos los componentes reutilizables de la interfaz de usuario.
+
+- **`ui/`**: Componentes estilizados y reutilizables.
+  - `button.tsx`: Botón reutilizable.
+  - `card.tsx`: Componente de tarjeta para mostrar información.
+  - `charts.tsx`: Contiene configuraciones y lógica para gráficos interactivos.
+  - `input.tsx`: Componente reutilizable para entradas de formulario.
+  - `label.tsx`: Etiquetas utilizadas en formularios.
+  - `table.tsx`: Tabla genérica para mostrar datos tabulares.
+- `alerts-table.tsx`: Tabla diseñada para alertas específicas.
+- `chart.tsx`: Componente para manejar gráficos individuales.
+- `login-form.tsx`: Formulario reutilizable para el inicio de sesión.
+- `metric-card.tsx`: Tarjeta diseñada para mostrar métricas clave.
+- `pie-chart.tsx`: Componente especializado para gráficos de pastel.
+- `register-form.tsx`: Formulario reutilizable para el registro de usuarios.
+- `sidebar.tsx`: Barra lateral de navegación.
+
+---
+
+### **`lib/`**
+Biblioteca de utilidades que contiene funciones auxiliares para el manejo de datos o lógica repetitiva.
+- `utils.ts`: Funciones utilitarias compartidas en el proyecto.
+
+---
+
+
+### **LÓGICA A MODIFICAR**
+
+- En el archivo `sidebar.tsx` existe un array navItems, Pasale las rutas que desees hacia tu API.
+- La logica de Inicio de sesion y Registrarse se encuentra en los archivos `login-form.tsx` y `register-form.tsx`. Ahí deberas hacer los cambios respectivos para manejar la lógica de inicio de sesion con tu API.
+- El dashboard principal se encuentra en `src/app/(sidebar)/(notAdmin)/page.js` Ahí deberas hacer la peticion de datos a tu servidor para manejar las diferentes gráficas y tablas.
+- Al rededor de las páginas, tienes botones que vas a querer hacer que redireccionen a otras partes de tu API. Hice arrays donde puedes modificar el valor del href.
+

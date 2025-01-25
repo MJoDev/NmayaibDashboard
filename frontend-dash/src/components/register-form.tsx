@@ -63,6 +63,7 @@ export function RegisterForm() {
 
     if (isValid) {
       // Simula la creación del usuario en reqres.in
+      // Aqui, en este try deberias pasarle el username y password del admin y el username y password del nuevo usuario a tu API
         try {
             const response = await fetch('https://reqres.in/api/users', {
             method: 'POST',
@@ -95,7 +96,6 @@ export function RegisterForm() {
   const fetchQrImage = async () => {
     setLoadingQr(true);
     try {
-      // Usamos un servicio de ejemplo para generar el QR, reemplaza con tu lógica de servidor real
       const response = await fetch('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=HelloWorld');
       if (!response.ok) {
         throw new Error('Error al obtener la imagen QR');
@@ -113,99 +113,100 @@ export function RegisterForm() {
 
 
   return (
-    <Card className="w-full m-12">
-        <CardHeader>
-            <CardTitle className="text-2xl text-black">Register</CardTitle>
-        </CardHeader>
-        <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Mostrar la imagen QR solo si la creación es exitosa */}
-            {creationSuccess && (
-            <div className="flex justify-center">
-                {loadingQr ? (
-                <p>Loading QR Image...</p>
-                ) : errorQr ? (
-                <p className="text-red-500">{errorQr}</p>
-                ) : qrImage ? (
-                <img src={qrImage} alt="QR Code" className="w-32 h-32" />
-                ) : (
-                <p>No QR image available</p>
-                )}
-            </div>
-            )}
-            
-            
-            <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                {/* Columna Admin */}
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="admin-username">Admin Username</Label>
-                        <Input
-                        id="admin-username"
-                        type="text"
-                        placeholder="Admin Username"
-                        value={adminUsername}
-                        onChange={(e) => setAdminUsername(e.target.value)}
-                        required
-                        aria-describedby="email-error"
-                        />
-                        {adminUsernameError && <p id="email-error" className="text-red-500 text-sm">{adminUsernameError}</p>}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="admin-password">Admin Password</Label>
-                        <Input
-                        id="admin-password"
-                        type="password"
-                        value={adminPassword}
-                        onChange={(e) => setAdminPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                        aria-describedby="password-error"
-                        />
-                        {adminPasswordError && <p id="password-error" className="text-red-500 text-sm">{adminPasswordError}</p>}
-                    </div>
-                </div>
-                
-                {/* Columna Nuevo Usuario */}
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="new-username">New Username</Label>
-                        <Input
-                        id="new-username"
-                        type="text"
-                        placeholder="New Username"
-                        value={newUsername}
-                        onChange={(e) => setNewUsername(e.target.value)}
-                        required
-                        aria-describedby="email-error"
-                        />
-                        {newUsernameError && <p id="email-error" className="text-red-500 text-sm">{newUsernameError}</p>}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="new-password">New Password</Label>
-                        <Input
-                        id="new-password"
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                        aria-describedby="password-error"
-                        />
-                        {newPasswordError && <p id="password-error" className="text-red-500 text-sm">{newPasswordError}</p>}
-                    </div>
-                </div>
-            </div>
-            </CardContent>
-            <CardFooter className="px-4">
-            <Button type="submit" className="mx-auto min-w-[250px]">
-                REGISTER
-            </Button>
-            </CardFooter>
-        </form>
-    </Card>
-
-
+    <div className="w-full">
+      <Card className="m-12 mb-0">
+          <CardHeader>
+              <CardTitle className="text-2xl text-black">Register</CardTitle>
+          </CardHeader>
+          <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Mostrar la imagen QR solo si la creación es exitosa */}
+              {creationSuccess && (
+              <div className="flex justify-center">
+                  {loadingQr ? (
+                  <p>Loading QR Image...</p>
+                  ) : errorQr ? (
+                  <p className="text-red-500">{errorQr}</p>
+                  ) : qrImage ? (
+                  <img src={qrImage} alt="QR Code" className="w-32 h-32" />
+                  ) : (
+                  <p>No QR image available</p>
+                  )}
+              </div>
+              )}
+              
+              
+              <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                  {/* Columna Admin */}
+                  <div className="space-y-4">
+                      <div className="space-y-2">
+                          <Label htmlFor="admin-username">Admin Username</Label>
+                          <Input
+                          id="admin-username"
+                          type="text"
+                          placeholder="Admin Username"
+                          value={adminUsername}
+                          onChange={(e) => setAdminUsername(e.target.value)}
+                          required
+                          aria-describedby="email-error"
+                          />
+                          {adminUsernameError && <p id="email-error" className="text-red-500 text-sm">{adminUsernameError}</p>}
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="admin-password">Admin Password</Label>
+                          <Input
+                          id="admin-password"
+                          type="password"
+                          value={adminPassword}
+                          onChange={(e) => setAdminPassword(e.target.value)}
+                          placeholder="Password"
+                          required
+                          aria-describedby="password-error"
+                          />
+                          {adminPasswordError && <p id="password-error" className="text-red-500 text-sm">{adminPasswordError}</p>}
+                      </div>
+                  </div>
+                  
+                  {/* Columna Nuevo Usuario */}
+                  <div className="space-y-4">
+                      <div className="space-y-2">
+                          <Label htmlFor="new-username">New Username</Label>
+                          <Input
+                          id="new-username"
+                          type="text"
+                          placeholder="New Username"
+                          value={newUsername}
+                          onChange={(e) => setNewUsername(e.target.value)}
+                          required
+                          aria-describedby="email-error"
+                          />
+                          {newUsernameError && <p id="email-error" className="text-red-500 text-sm">{newUsernameError}</p>}
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="new-password">New Password</Label>
+                          <Input
+                          id="new-password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Password"
+                          required
+                          aria-describedby="password-error"
+                          />
+                          {newPasswordError && <p id="password-error" className="text-red-500 text-sm">{newPasswordError}</p>}
+                      </div>
+                  </div>
+              </div>
+              </CardContent>
+              <CardFooter className="px-4">
+              <Button type="submit" className="mx-auto min-w-[250px]">
+                  REGISTER
+              </Button>
+              </CardFooter>
+          </form>
+      </Card>
+      <a href="/login" className="text-blue-500 justify-end flex underline mr-12 mt-2">Get Back to Login!</a>
+    </div>
 
 
   );

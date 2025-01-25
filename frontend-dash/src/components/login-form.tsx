@@ -69,6 +69,7 @@ export function LoginForm() {
   };
 
   return (
+    <div>
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle className="text-2xl text-black">Login</CardTitle>
@@ -108,7 +109,11 @@ export function LoginForm() {
           </Button>
           {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
         </CardFooter>
+        
       </form>
+      
     </Card>
+    <a href="/register" className="text-blue-500 justify-end flex underline">Register here!</a>
+    </div>
   );
 }
