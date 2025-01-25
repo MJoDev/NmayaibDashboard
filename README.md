@@ -11,6 +11,12 @@ Pedido personalizado de Fiverr, tiempo flexible.
 
 ## Deployment
 
+Primero ejecuta el comando 
+
+```bash
+  npm install
+```
+
 Para correr en modo de desarrollo ejecuta:
 
 ```bash
