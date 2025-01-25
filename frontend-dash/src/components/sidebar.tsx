@@ -29,7 +29,7 @@ export function Sidebar({ className, isOpen }: SidebarProps) {
     Cookies.remove("auth_token");
 
     // Redirige al usuario a la página de login
-    router.push("/login"); // Ajusta la ruta según tu estructura
+    router.push("/login"); 
   };
 
   return (

@@ -1,5 +1,6 @@
 "use client"
 
+import React, { useState } from "react"
 import { Line } from "react-chartjs-2"
 import {
   Chart as ChartJS,
@@ -13,7 +14,6 @@ import {
 } from "chart.js"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import React from "react"
 
 ChartJS.register(
   CategoryScale,
@@ -29,11 +29,13 @@ interface ChartProps {
   title: string
   value: number
   percentage: number
-  data: number[]
-  labels: string[]
+  initialData: { [key: string]: { labels: string[]; data: number[] } }
 }
 
-export function Chart({ title, value, percentage, data, labels }: ChartProps) {
+export function Chart({ title, value, percentage, initialData }: ChartProps) {
+  const [selectedPeriod, setSelectedPeriod] = useState("1d")
+  const { labels, data } = initialData[selectedPeriod]
+
   const options = {
     responsive: true,
     plugins: {
@@ -61,24 +63,32 @@ export function Chart({ title, value, percentage, data, labels }: ChartProps) {
     ],
   }
 
+  const periods = ["1d", "5d", "1m", "6m", "1y", "5y", "Max"]
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <div className="mt-1 flex items-baseline">
+        <div className="mt-1 flex flex-col sm:flex-row sm:items-baseline">
           <span className="text-2xl font-semibold">{value.toLocaleString()}</span>
-          <span className={`ml-2 text-sm ${percentage >= 0 ? "text-green-600" : "text-red-600"}`}>
-            {percentage >= 0 ? "+" : ""}{percentage}%
+          <span className={`mt-1 sm:mt-0 sm:ml-2 text-sm ${percentage >= 0 ? "text-green-600" : "text-red-600"}`}>
+            {percentage >= 0 ? "+" : ""}
+            {percentage}%
           </span>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[200px] sm:h-[300px]">
           <Line options={options} data={chartData} />
         </div>
-        <div className="mt-4 flex gap-2">
-          {["1d", "5d", "1m", "6m", "1y", "5y", "Max"].map((period) => (
-            <Button key={period} variant="outline" size="sm">
+        <div className="mt-4 flex flex-wrap gap-2">
+          {periods.map((period) => (
+            <Button
+              key={period}
+              variant={selectedPeriod === period ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedPeriod(period)}
+            >
               {period}
             </Button>
           ))}
@@ -87,4 +97,3 @@ export function Chart({ title, value, percentage, data, labels }: ChartProps) {
     </Card>
   )
 }
-

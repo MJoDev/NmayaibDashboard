@@ -49,13 +49,18 @@ export function LoginForm() {
       if (!response.ok) {
         throw new Error(data.error || "Login failed");
       }
-
-      // Si el login es exitoso, guarda el token en las cookies
       const { token } = data;
-      Cookies.set("auth_token", token, { expires: 7 }); // Token guardado en las cookies por 7 días
+      if(Cookies.get("AdminStatus") === "Admin") {
+        Cookies.set("adminAuthToken", token, {expires: 1})
+        window.location.href = "/admin"; 
+      }else{
+        // Si el login es exitoso, guarda el token en las cookies
+        Cookies.set("auth_token", token, { expires: 7 }); // Token guardado en las cookies por 7 días
 
-      // Redirige a la página principal o a la página protegida
-      window.location.href = "/dashboard"; // Cambia la URL de acuerdo a tu estructura de rutas
+        // Redirige a la página principal o a la página protegida
+        window.location.href = "/"; // Cambia la URL de acuerdo a tu estructura de rutas
+      }
+      
 
     } catch (error: any) {
       // Si hay un error, muestra el mensaje de error

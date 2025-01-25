@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Dashboar",
+  title: "Dashboard",
   description: "For Nmayaib",
 };
 

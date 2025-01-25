@@ -32,27 +32,32 @@ if (loading) {
     )  // Show loading while checking
 }
   return (
-    <div className="w-screen h-screen overflow-x-hidden transition-transform duration-300 ease-in-out">
-      <main className="overflow-hidden flex m-3">
-
-      <button
-        onClick={handleSidebarToggle}
-        className={`md:hidden p-2 text-white bg-[#14213D] rounded-full fixed top-5 z-50 ${isSidebarOpen ? 'ml-[210px]' : 'ml-0'}`}
-      >
-        <Menu></Menu>
-      </button>
-        <div
-        className={`transition-transform duration-300 ease-in-out fixed
-            ${isSidebarOpen ? 'translate-x-0' : 'translate-x-[-100%]'} `}
+    <div className="w-screen h-screen overflow-hidden transition-transform duration-300 ease-in-out">
+      <main className="flex m-3">
+        <button
+          onClick={handleSidebarToggle}
+          className={`md:hidden p-2 text-white bg-[#14213D] rounded-full fixed top-5 z-50 ${
+            isSidebarOpen ? 'left-[210px]' : 'left-4'
+          }`}
         >
-            <Sidebar isOpen={isSidebarOpen}></Sidebar>
+          <Menu />
+        </button>
+        <div
+          className={`transition-transform duration-300 ease-in-out fixed ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <Sidebar isOpen={isSidebarOpen} />
         </div>
         <div
-          className={`flex-1 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'ml-[225px]' : 'ml-0'}`}
-        >
-            {children}
+            className={`flex-1 transition-transform duration-300 ease-in-out overflow-y-auto ${
+              isSidebarOpen ? 'ml-[225px]' : 'ml-0'
+            }`}
+            style={{ maxHeight: '100vh',  marginRight: '0', paddingRight: '0' }} // Asegura que el contenedor permita scroll
+          >
+          {children}
         </div>
-    </main>
+      </main>
     </div>
   );
 };
