@@ -27,7 +27,8 @@ export function Sidebar({ className, isOpen }: SidebarProps) {
   const handleLogout = () => {
     // Elimina el token de las cookies
     Cookies.remove("auth_token");
-
+    Cookies.remove("adminAuthToken");
+    Cookies.remove("AdminStatus");
     // Redirige al usuario a la página de login
     router.push("/login"); 
   };
