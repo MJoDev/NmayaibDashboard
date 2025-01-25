@@ -11,7 +11,7 @@ Pedido personalizado de Fiverr, tiempo flexible.
 
 ## Deployment
 
-Primero ejecuta el comando 
+Primero ejecuta el comando dentro de `/frontend-dash`
 
 ```bash
   npm install
