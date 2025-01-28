@@ -9,7 +9,8 @@ export default function Admin() {
 
     const router = useRouter();
     useEffect(() => {
-        const token = Cookies.get("auth_token");
+        const userData = JSON.parse(Cookies.get("user_data") || "{}");
+        const token = userData.auth_token;
         const adminToken = Cookies.get("adminAuthToken");
         // Si no hay token o el token es inválido, redirige a login
         if (!adminToken || !token || !(Cookies.get("AdminStatus") === "Admin")) {

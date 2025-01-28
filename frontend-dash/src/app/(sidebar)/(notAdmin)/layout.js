@@ -10,7 +10,8 @@ export default function NotAdminLayout({children}){
 
     useEffect(() => {
         // Token verification only in the client
-        const token = Cookies.get("auth_token");
+        const userData = JSON.parse(Cookies.get("user_data") || "{}");
+        const token = userData.auth_token;
         Cookies.set("AdminStatus", "User");
         if (!token) {
           router.push("/login");  // Redirect to login if no token
