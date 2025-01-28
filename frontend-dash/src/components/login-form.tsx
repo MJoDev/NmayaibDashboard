@@ -9,8 +9,10 @@ import Cookies from "js-cookie"; // Para manejar las cookies
 export function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [ token, setToken] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [tokenError, setTokenError] = useState("");
   const [errorMessage, setErrorMessage] = useState(""); // Para manejar el mensaje de error
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,6 +32,13 @@ export function LoginForm() {
     } else {
       setPasswordError("");
     }
+    if(token.length < 6) {
+      setTokenError("Token must be at least 6 characters long.");
+      return;
+    } else {  
+      setTokenError("");
+    }
+
 
     try {
       // Peticion a reqres.in A cambiar. Lo envio como email ya que su API recibe es un email.
@@ -49,15 +58,16 @@ export function LoginForm() {
       if (!response.ok) {
         throw new Error(data.error || "Login failed");
       }
-      const { token } = data;
+      const { auth_token } = data;
       if(Cookies.get("AdminStatus") === "Admin") {
-        Cookies.set("adminAuthToken", token, {expires: 1})
+        Cookies.set("adminAuthToken", auth_token, {expires: 1})
         window.location.href = "/admin"; 
       }else{
         // Si el login es exitoso, guarda el token en las cookies
         // Combinar los datos en un objeto
         const userData = {
-          auth_token: token,
+          auth_token: auth_token,
+          token: token,
           username: username,
           password: password
         };
@@ -107,6 +117,19 @@ export function LoginForm() {
               aria-describedby="password-error"
             />
             {passwordError && <p id="password-error" className="text-red-500 text-sm">{passwordError}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Token</Label>
+            <Input
+              id="token"
+              type="text"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              placeholder="Enter your token"
+              required
+              aria-describedby="token-error"
+            />
+            {tokenError && <p id="token-error" className="text-red-500 text-sm">{tokenError}</p>}
           </div>
         </CardContent>
         <CardFooter>
