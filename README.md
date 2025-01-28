@@ -93,4 +93,15 @@ Biblioteca de utilidades que contiene funciones auxiliares para el manejo de dat
 - La logica de Inicio de sesion y Registrarse se encuentra en los archivos `login-form.tsx` y `register-form.tsx`. Ahí deberas hacer los cambios respectivos para manejar la lógica de inicio de sesion con tu API.
 - El dashboard principal se encuentra en `src/app/(sidebar)/(notAdmin)/page.js` Ahí deberas hacer la peticion de datos a tu servidor para manejar las diferentes gráficas y tablas.
 - Al rededor de las páginas, tienes botones que vas a querer hacer que redireccionen a otras partes de tu API. Hice arrays donde puedes modificar el valor del href.
+```bash
+  //Ahora desde el login se guarda la info en la cookie user_data. Puedes recuperar los datos de vuelta de la siguiente forma:
+  // Obtener los datos de la cookie y parsearlos
+  import Cookies from "js-cookie"; //Import necesario. Lo pondras arriba del archivo en el que desees obtener de vuelta la cookie.
+  const userData = JSON.parse(Cookies.get("user_data") || "{}");
+
+  // Acceder a los valores
+  const token = userData.auth_token;
+  const username = userData.username;
+  const password = userData.password;
+```
 

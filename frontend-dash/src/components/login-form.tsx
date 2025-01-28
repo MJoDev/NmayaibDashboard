@@ -17,8 +17,8 @@ export function LoginForm() {
     e.preventDefault();
 
     // Validación simple del username (puedes agregar más validaciones si lo deseas)
-    if (username.length < 3) {
-      setUsernameError("Username must be at least 3 characters long.");
+    if (username.length < 6) {
+      setUsernameError("Username must be at least 6 characters long.");
       return;
     } else {
       setUsernameError("");
@@ -55,9 +55,15 @@ export function LoginForm() {
         window.location.href = "/admin"; 
       }else{
         // Si el login es exitoso, guarda el token en las cookies
-        Cookies.set("auth_token", token, { expires: 7 }); // Token guardado en las cookies por 7 días
+        // Combinar los datos en un objeto
+        const userData = {
+          auth_token: token,
+          username: username,
+          password: password
+        };
 
-        // Redirige a la página principal o a la página protegida
+        // Guardar el objeto como una cookie en formato JSON
+        Cookies.set("user_data", JSON.stringify(userData), { expires: 7 });
         window.location.href = "/"; // Cambia la URL de acuerdo a tu estructura de rutas
       }
       
