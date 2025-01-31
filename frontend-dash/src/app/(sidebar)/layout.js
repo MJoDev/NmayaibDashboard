@@ -16,7 +16,10 @@ const handleSidebarToggle = () => {
 
 useEffect(() => {
     // Token verification only in the client
-    const token = Cookies.get("auth_token");
+    const userData = Cookies.get("user_data");
+    const userDataObj = JSON.parse(userData);
+    const token = userDataObj.auth_token;
+
     if (!token) {
       router.push("/login");  // Redirect to login if no token
     } else {
