@@ -57,7 +57,7 @@ export function LoginForm() {
       // Redirección después del login exitoso
       if (Cookies.get("AdminStatus") === "Admin") {
         //window.location.href = "/admin";  SE TIENE QUE HABULITAR SI SE DESEA QUE SE ENTRE ACA DIRECTO
-        window.location.href = "/";
+        window.location.href = "/admin";
       } else {
         window.location.href = "/";
       }
