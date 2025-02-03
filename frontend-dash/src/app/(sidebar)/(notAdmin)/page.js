@@ -92,7 +92,7 @@ export default function Home() {
 
     return (
       <div className="flex flex-col min-h-screen">
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto overflow-x-hidden">
           <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {metrics.map((metric) => (
               <MetricCard key={metric.title} {...metric} />
@@ -101,22 +101,19 @@ export default function Home() {
           <div className="mb-6">
             <PieChartComponent title="Asset Allocation" data={pieChartData} />  
           </div>
-          
           <div className="mb-6 grid gap-6 grid-cols-1 md:grid-cols-2">
-            
+            <PieChartComponent title="Asset Class" data={pieChartData} />  
+            <PieChartComponent title="Investment Type" data={pieChartData} />    
+          </div>
+          <div className="mb-6 grid gap-6 grid-cols-1 md:grid-cols-1">
+            <div className="justify-center flex">
               <Chart
-                title="Assets Under Management"
-                value={4566.48}
-                percentage={1.66}
-                initialData={chartData}
-              />
-            
-              <Chart
-                title="Revenue"
-                value={4566.48}
-                percentage={1.66}
-                initialData={chartData}
-              />
+                  title="Assets Under Management"
+                  value={4566.48}
+                  percentage={1.66}
+                  initialData={chartData}
+                />
+            </div>
             
           </div>
 

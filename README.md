@@ -104,4 +104,7 @@ Biblioteca de utilidades que contiene funciones auxiliares para el manejo de dat
   const username = userData.username;
   const password = userData.password;
 ```
-
+- Crea un .env para tus rutas. Lo puedes hacer de la siguiente forma. Remplaza la IP por la direccion de tu servidor o a la que quieras hacer las peticiones. Ejemplo:
+```bash
+  NEXT_PUBLIC_API_URL="http://10.20.1.61:8510"
+```
