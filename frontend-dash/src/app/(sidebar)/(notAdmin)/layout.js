@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { useRouter} from "next/navigation";
 
 export default function NotAdminLayout({children}){
-    const [loading, setLoading] = useState(false);  // State for initial loading
+    const [loading, setLoading] = useState(true);  // State for initial loading
     const router = useRouter(); 
 
-    /*
+  
     useEffect(() => {
         // Token verification only in the client
         const userData = JSON.parse(Cookies.get("user_data") || "{}");
@@ -20,7 +20,7 @@ export default function NotAdminLayout({children}){
           setLoading(false);  // If token exists, allow page rendering
         }
       }, [router]);
-    */
+    
 
     if (loading) {
         return (

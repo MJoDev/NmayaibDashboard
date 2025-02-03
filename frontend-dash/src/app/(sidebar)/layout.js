@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/sidebar";
 import { Menu } from "lucide-react";
 
 const ProtectedLayout = ({ children }) => {
-const [loading, setLoading] = useState(false);  // State for initial loading
+const [loading, setLoading] = useState(true);  // State for initial loading
 const router = useRouter(); 
 const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -14,7 +14,6 @@ const handleSidebarToggle = () => {
     setIsSidebarOpen(!isSidebarOpen);
 };
 
-/*
 useEffect(() => {
     // Token verification only in the client
     const userData = Cookies.get("user_data");
@@ -32,7 +31,6 @@ useEffect(() => {
     }
     
   }, [router]);
-*/
 
 if (loading) {
     return (
