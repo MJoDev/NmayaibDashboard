@@ -2,7 +2,7 @@
 import { Home, Database, Search, MessageSquare, LogOut, Shield, CirclePlus} from 'lucide-react'
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import React from 'react'
+import React, { useEffect } from 'react'
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
@@ -13,7 +13,14 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Sidebar({ className, isOpen }: SidebarProps) {
 
+  
   const router = useRouter();
+
+  useEffect(() => { 
+    const userData = JSON.parse(Cookies.get("user_data") || "{}");
+    const token = userData.auth_token;
+    
+  }, []);
 
   const navItems = [
     { icon: Home, label: "Home", href: "/" },
