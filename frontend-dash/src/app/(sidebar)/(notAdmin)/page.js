@@ -242,7 +242,7 @@ export default function Home() {
           setPercentageChange(percentageChange);
       };
 
-      fetchData();
+      fetchChartData();
     }, []);
 
     return (
