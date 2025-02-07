@@ -3,26 +3,11 @@ import { AlertsTable } from "@/components/alerts-table"
 import { Chart } from "@/components/chart"
 import { PieChartComponent } from "@/components/pie-chart"
 import { useEffect } from "react"
-// import { useState } from 'react';
-
-/*
-
-Este es el dashboard. Puedes hacer una simple obtencion de datos y mostrarlas en la interfaz.
-No usarias constantes, sino variables de estado que obtendrias a traves de una conexion en tu base de datos.
-
-*/
-
 
 const metrics = [
   { title: "Deposits", value: "$53,000", percentage: 55 },
   { title: "Withdrawal", value: "$53,000", percentage: 55 },
   { title: "Cash", value: "$53,000", percentage: 55 },
-]
-
-const alerts = [
-  { id: "U2345678", client: "Carlos Perez", businessUnit: "Suiza", rep: "Carlos Perez", status: "HIGH" },
-  { id: "U2345671", client: "Laura Perrier", businessUnit: "Panama", rep: "Carlos Perez", status: "MODERATE" },
-  // Añadir mas de ser necesario
 ]
 
 // Ejemplo de dataset para el chart
@@ -61,18 +46,22 @@ export default function Home() {
 
   const [assetClassData, setAssetClassData] = useState([]);
   const [investmentTypeData, setInvestmentTypeData] = useState([]);
-
-  // Función para obtener los datos del backend
+  const [ Alerts, setAlerts ] = useState([]);
+  /*
+   * Fetches the data from the backend and processes it for both pie charts.
+   */
   const fetchPieData = async () => {
     try {
-      const response = await fetch(`${proccess.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValueAssetClassInvestmentType`);
+      // Fetch the data from the backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValueAssetClassInvestmentType`);
       const data = await response.json();
 
       if (data.success) {
-        // Procesar los datos para ambos gráficos
+        // Process the data for both pie charts
         const processedAssetClassData = processDataForPieChart(data.total_value, 'Asset Class');
         const processedInvestmentTypeData = processDataForPieChart(data.total_value, 'Investment Type');
 
+        // Update the state with the processed data
         setAssetClassData(processedAssetClassData);
         setInvestmentTypeData(processedInvestmentTypeData);
       } else {
@@ -163,7 +152,7 @@ export default function Home() {
             
           </div>
 
-          <AlertsTable alerts={alerts} />
+          <AlertsTable alerts={Alerts} />
           
         </main>
     </div>
