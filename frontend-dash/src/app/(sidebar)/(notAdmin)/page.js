@@ -2,6 +2,7 @@ import { MetricCard } from "@/components/metric-card"
 import { AlertsTable } from "@/components/alerts-table"
 import { Chart } from "@/components/chart"
 import { PieChartComponent } from "@/components/pie-chart"
+import { useEffect } from "react"
 // import { useState } from 'react';
 
 /*
@@ -62,7 +63,7 @@ export default function Home() {
   const [investmentTypeData, setInvestmentTypeData] = useState([]);
 
   // Función para obtener los datos del backend
-  const fetchData = async () => {
+  const fetchPieData = async () => {
     try {
       const response = await fetch(`${proccess.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValueAssetClassInvestmentType`);
       const data = await response.json();
@@ -82,6 +83,39 @@ export default function Home() {
     }
   };
 
+  async function fetchAndAdaptAlerts() {
+    try {
+      // Realizar la solicitud GET al endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/alerta/latestAlta`, {
+        method: 'GET',
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error fetching alerts: ${response.statusText}`);
+      }
+  
+      // Parsear la respuesta JSON
+      const data = await response.json();
+  
+      // Adaptar los datos a la estructura deseada
+      const adaptedAlerts = data.map((item) => {
+        const alert = item.alert[0]; // Acceder al primer elemento del array `alert`
+        return {
+          id: `U${alert.holding[0].details[0].cusip}`, // Generar un ID único usando el CUSIP
+          client: alert.holding[0].portfolio.client_data.name,
+          businessUnit: alert.holding[0].portfolio.bussines_unit,
+          rep: alert.holding[0].portfolio.rep_data.name,
+          status: alert.prioridad === 'Alta' ? 'HIGH' : 'MODERATE',
+        };
+      });
+  
+      return adaptedAlerts;
+    } catch (error) {
+      console.error('Error:', error);
+      return [];
+    }
+  }
+
   const processDataForPieChart = (totalValue, groupByField) => {
     // Agrupar los datos por el campo especificado (Asset Class o Investment Type)
     const groupedData = totalValue.reduce((acc, item) => {
@@ -96,6 +130,11 @@ export default function Home() {
     // Convertir el objeto agrupado en un array
     return Object.values(groupedData);
   };
+
+  useEffect(() => {
+    fetchPieData();
+    fetchAndAdaptAlerts().then(setAlerts);
+  }, []);
 
     return (
       <div className="flex flex-col min-h-screen">
