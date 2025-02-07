@@ -1,32 +1,51 @@
 "use client"
 import { Home, Database, Search, MessageSquare, LogOut, Shield, CirclePlus} from 'lucide-react'
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import crypto from 'crypto';
+import { useEncryption } from "@/lib/encrypt";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string,
   isOpen: boolean
 }
 
+
+
 export function Sidebar({ className, isOpen }: SidebarProps) {
 
-  
+  const [encryptedData, setEncryptedData] = useState('');
+  const { encryptData } = useEncryption();
   const router = useRouter();
+
+  
 
   useEffect(() => { 
     const userData = JSON.parse(Cookies.get("user_data") || "{}");
     const token = userData.auth_token;
-    
+    const username = userData.username;
+    const secretKey = crypto.randomBytes(32).toString('base64');
+    const handleEncrypt = async () => {
+      try{
+        const result = await encryptData(username, token, secretKey);
+        setEncryptedData(result);
+      }catch{
+        console.log("Error Encrypting data");
+      }
+      
+    }
+    handleEncrypt();
   }, []);
+
+
 
   const navItems = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Database, label: "Data", href: "/data" },
-    { icon: Search, label: "Find", href: "/search" },
-    { icon: MessageSquare, label: "Chatbot", href: "/chat" },
+    { icon: Database, label: "Data", href: `https://alertas.portal.com?data=${encryptedData}` },
+    { icon: Search, label: "Find", href: `https://alertas.portal.com?data=${encryptedData}`},
+    { icon: MessageSquare, label: "Chatbot", href: `https://chatbot.portal.com?data=${encryptedData}` },
     { icon: Shield, label: "Admin", href: "/admin" },
     { icon: CirclePlus, label: "Extras", href: "/extras" },
   ]

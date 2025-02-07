@@ -11,6 +11,7 @@ No usarias constantes, sino variables de estado que obtendrias a traves de una c
 
 */
 
+
 const metrics = [
   { title: "Deposits", value: "$53,000", percentage: 55 },
   { title: "Withdrawal", value: "$53,000", percentage: 55 },
@@ -55,40 +56,46 @@ const chartData = {
   },
 }
 
-const pieChartData = [
-  { name: "Stocks", value: 400 },
-  { name: "Bonds", value: 300 },
-  { name: "Cash", value: 200 },
-  { name: "Real Estate", value: 100 },
-  { name: "Commodities", value: 50 },
-]
-
-
 export default function Home() {
 
-  /* Por ejemplo, podrias necesitar algo como esto:
-  
-  [ metrics, setMetrics ] = useState([]);
+  const [assetClassData, setAssetClassData] = useState([]);
+  const [investmentTypeData, setInvestmentTypeData] = useState([]);
 
-  useEffect(() => {
-    fetch("/api/metrics")
-      .then((response) => response.json())
-      .then((data) => setMetrics(data));
-  }, []);
+  // Función para obtener los datos del backend
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${proccess.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValueAssetClassInvestmentType`);
+      const data = await response.json();
 
-  Despues de obtener los datos, puedes usarlos para mostrarlos en la interfaz. Eliminarias los datos de las constantes de arriba.
-  En cuanto a como esperan los datos los diferentes gráficos, lo puedes observar en las diferentes constantes.
+      if (data.success) {
+        // Procesar los datos para ambos gráficos
+        const processedAssetClassData = processDataForPieChart(data.total_value, 'Asset Class');
+        const processedInvestmentTypeData = processDataForPieChart(data.total_value, 'Investment Type');
 
-  metrics espera un un titulo, un valor y un porcentaje
+        setAssetClassData(processedAssetClassData);
+        setInvestmentTypeData(processedInvestmentTypeData);
+      } else {
+        console.error('Error fetching data:', data.message || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-  los charts planos espera que le pases la informacion relevante como la métrica que desees, y los valores correspondientes en las diferentes fechas.
-  En cuanto al valor, puedes concantenar un valor diario que quieras mostrar, y lo cambiarias al renderizar el gráfico.
-  Por ejemplo, en lugar de pasar un valor plano como 4566.48, pasarias algo como chartData["1d"].data[0]
+  const processDataForPieChart = (totalValue, groupByField) => {
+    // Agrupar los datos por el campo especificado (Asset Class o Investment Type)
+    const groupedData = totalValue.reduce((acc, item) => {
+      const key = item[groupByField] || 'Unknown'; // Manejar valores nulos
+      if (!acc[key]) {
+        acc[key] = { name: key, value: 0 };
+      }
+      acc[key].value += item['Total Value'];
+      return acc;
+    }, {});
 
-  alerts espera un id, un client, un businessUnit, un rep y un status
-  
-  PieChartComponent espera un name y un value.
-  */
+    // Convertir el objeto agrupado en un array
+    return Object.values(groupedData);
+  };
 
     return (
       <div className="flex flex-col min-h-screen">
@@ -102,8 +109,8 @@ export default function Home() {
             <PieChartComponent title="Asset Allocation" data={pieChartData} />  
           </div>
           <div className="mb-6 grid gap-6 grid-cols-1 md:grid-cols-2">
-            <PieChartComponent title="Asset Class" data={pieChartData} />  
-            <PieChartComponent title="Investment Type" data={pieChartData} />    
+            <PieChartComponent title="Asset Class" data={assetClassData} />  
+            <PieChartComponent title="Investment Type" data={investmentTypeData} />    
           </div>
           <div className="mb-6 grid gap-6 grid-cols-1 md:grid-cols-1">
             <div className="justify-center flex">
