@@ -138,23 +138,13 @@ export default function Home() {
     return Math.round((value / maxValue) * 100);
   }
 
-  const fetchHistoricalData = async (filter) => {
+  // Función para obtener los datos históricos del backend
+  const fetchHistoricalData = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValuePerFecha`, { method: 'GET' });
       const data = await response.json();
       if (data.success) {
-        const historicalData = data.total_value;
-  
-        // Transformar los datos según el filtro
-        const transformedData = transformDataForChart(historicalData, filter);
-  
-        // Calcular el cambio porcentual
-        const percentageChange = calculatePercentageChange(historicalData);
-  
-        return {
-          initialData: transformedData,
-          percentage: percentageChange,
-        };
+        return data.total_value; // Devuelve el array de datos históricos
       } else {
         throw new Error('Error fetching historical data');
       }
@@ -162,98 +152,94 @@ export default function Home() {
       console.error(error);
     }
   };
-  
-  // Función para calcular el cambio porcentual
-  const calculatePercentageChange = (historicalData) => {
-    if (historicalData.length < 2) return 0;
-  
-    const firstValue = historicalData[0].total;
-    const lastValue = historicalData[historicalData.length - 1].total;
-  
-    return ((lastValue - firstValue) / firstValue) * 100;
-  };
-  
-  // Función para transformar los datos según el filtro
-  const transformDataForChart = (historicalData, filter) => {
-    const labels = [];
-    const dataPoints = [];
-  
-    switch (filter) {
-      case "1d":
-        historicalData.forEach((item) => {
-          const date = new Date(item.date);
-          labels.push(`${date.getHours()}:00`);
-          dataPoints.push(item.total);
-        });
-        break;
-  
-      case "5d":
-        historicalData.forEach((item) => {
-          const date = new Date(item.date);
-          labels.push(`Day ${date.getDate()}`);
-          dataPoints.push(item.total);
-        });
-        break;
-  
-      case "1m":
-        historicalData.forEach((item, index) => {
-          labels.push(`Week ${index + 1}`);
-          dataPoints.push(item.total);
-        });
-        break;
-  
-      case "6m":
-        historicalData.forEach((item) => {
-          const date = new Date(item.date);
-          labels.push(date.toLocaleString('default', { month: 'short' }));
-          dataPoints.push(item.total);
-        });
-        break;
-  
-      case "1y":
-        historicalData.forEach((item) => {
-          const date = new Date(item.date);
-          labels.push(date.toLocaleString('default', { month: 'short' }));
-          dataPoints.push(item.total);
-        });
-        break;
-  
-      case "5y":
-        historicalData.forEach((item) => {
-          const date = new Date(item.date);
-          labels.push(date.getFullYear().toString());
-          dataPoints.push(item.total);
-        });
-        break;
-  
-      case "Max":
-        historicalData.forEach((item) => {
-          const date = new Date(item.date);
-          labels.push(date.getFullYear().toString());
-          dataPoints.push(item.total);
-        });
-        break;
-  
-      default:
-        break;
-    }
-  
-    return { labels, data: dataPoints };
-  };
+
+  // Función para transformar los datos al formato esperado
+  const transformDataForChart = (historicalData) => {
+    // Ordenar los datos por fecha
+    const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Extraer las fechas y valores
+    const dates = sortedData.map((item) => new Date(item.date));
+    const values = sortedData.map((item) => item.total);
+
+    // Calcular el valor total (último valor)
+    const totalValue = values[values.length - 1];
+
+    // Calcular el porcentaje de cambio
+    const firstValue = values[0];
+    const lastValue = values[values.length - 1];
+    const percentageChange = ((lastValue - firstValue) / firstValue) * 100;
+
+    // Función auxiliar para generar etiquetas
+    const generateLabels = (type, count) => {
+      switch (type) {
+        case "1d":
+          return Array.from({ length: count }, (_, i) => `${10 + i}:00`);
+        case "5d":
+          return Array.from({ length: count }, (_, i) => `Day ${i + 1}`);
+        case "1m":
+          return Array.from({ length: count }, (_, i) => `Week ${i + 1}`);
+        case "6m":
+          return Array.from({ length: count }, (_, i) => `Month ${i + 1}`);
+        case "1y":
+          return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        case "5y":
+          return Array.from({ length: count }, (_, i) => `${2019 + i}`);
+        case "Max":
+          return Array.from({ length: count }, (_, i) => `${2010 + i * 5}`);
+        default:
+          return [];
+      }
+    };
+
+      // Construir el objeto chartData
+      const chartData = {
+        "1d": {
+          labels: generateLabels("1d", 5),
+          data: values.slice(0, 5), // Tomar los primeros 5 valores
+        },
+        "5d": {
+          labels: generateLabels("5d", 5),
+          data: values.slice(0, 5), // Tomar los primeros 5 valores
+        },
+        "1m": {
+          labels: generateLabels("1m", 4),
+          data: values.slice(0, 4), // Tomar los primeros 4 valores
+        },
+        "6m": {
+          labels: generateLabels("6m", 6),
+          data: values.slice(0, 6), // Tomar los primeros 6 valores
+        },
+        "1y": {
+          labels: generateLabels("1y", 12),
+          data: values.slice(0, 12), // Tomar los primeros 12 valores
+        },
+        "5y": {
+          labels: generateLabels("5y", 5),
+          data: values.slice(0, 5), // Tomar los primeros 5 valores
+        },
+        Max: {
+          labels: generateLabels("Max", 4),
+          data: values.slice(0, 4), // Tomar los primeros 4 valores
+        },
+      };
+
+      return { chartData, totalValue, percentageChange };
+    };
 
     useEffect(() => {
       fetchPieData();
       fetchAndAdaptAlerts().then(setAlerts);
       fetchMetrics().then(setMetrics);
       const fetchChartData = async () => {
-        // Obtener el valor total (AUM)
-        const total = await fetchTotalValue();
-        setTotalValue(total);
-  
-        // Obtener los datos históricos y el cambio porcentual
-        const { initialData, percentage } = await fetchHistoricalData(selectedFilter);
-        setChartData(initialData);
-        setPercentageChange(percentage);
+        const historical = await fetchHistoricalData();
+
+          // Transformar los datos al formato esperado por el Chart
+          const { chartData: transformedData, totalValue, percentageChange } = transformDataForChart(historical);
+
+          setChartData(transformedData);
+          setTotalValue(totalValue);
+          setPercentageChange(percentageChange);
       };
 
       fetchData();
