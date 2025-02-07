@@ -4,11 +4,6 @@ import { Chart } from "@/components/chart"
 import { PieChartComponent } from "@/components/pie-chart"
 import { useEffect } from "react"
 
-const metrics = [
-  { title: "Deposits", value: "$53,000", percentage: 55 },
-  { title: "Withdrawal", value: "$53,000", percentage: 55 },
-  { title: "Cash", value: "$53,000", percentage: 55 },
-]
 
 // Ejemplo de dataset para el chart
 const chartData = {
@@ -47,6 +42,7 @@ export default function Home() {
   const [assetClassData, setAssetClassData] = useState([]);
   const [investmentTypeData, setInvestmentTypeData] = useState([]);
   const [ Alerts, setAlerts ] = useState([]);
+  const [ Metrics, setMetrics ] = useState([]);
   /*
    * Fetches the data from the backend and processes it for both pie charts.
    */
@@ -120,16 +116,62 @@ export default function Home() {
     return Object.values(groupedData);
   };
 
+  async function fetchMetrics() {
+    try {
+      // Definir el rango de fechas (puedes ajustarlo según tus necesidades)
+      const fecha_inicio = "2024-10-16";
+      const fecha_fin = "2024-10-23";
+  
+      // Llamar al endpoint /api/v1/Actividad/getSumByTypeAndDateRange
+      const actividadResponse = await axios.post('/api/v1/Actividad/getSumByTypeAndDateRange', {
+        fecha_inicio,
+        fecha_fin,
+      });
+  
+      // Extraer los totales de la respuesta
+      const { Deposit, "Transfer In": TransferIn, Withdrawal, "Transfer Out": TransferOut } =
+        actividadResponse.data.total_sum;
+  
+      // Calcular los valores para Deposits y Withdrawals
+      const depositsTotal = Deposit + TransferIn;
+      const withdrawalsTotal = Withdrawal + TransferOut;
+  
+      // Llamar al endpoint /api/v1/holding/getLastCash
+      const cashResponse = await axios.get('/api/v1/holding/getLastCash');
+      const cashValue = cashResponse.data.message;
+  
+      // Formatear los datos en el formato esperado por el frontend
+      const metrics = [
+        { title: "Deposits", value: `$${depositsTotal}`, percentage: calculatePercentage(depositsTotal) },
+        { title: "Withdrawal", value: `$${withdrawalsTotal}`, percentage: calculatePercentage(withdrawalsTotal) },
+        { title: "Cash", value: `$${cashValue}`, percentage: calculatePercentage(cashValue) },
+      ];
+  
+      console.log(metrics);
+      return metrics; // Devolver las métricas para usarlas en tu componente
+    } catch (error) {
+      console.error("Error fetching metrics:", error);
+      return [];
+    }
+  }
+
+  function calculatePercentage(value) {
+    // Ejemplo: Porcentaje basado en un valor máximo arbitrario (ajusta según tu lógica)
+    const maxValue = 100000; // Valor máximo para el cálculo del porcentaje
+    return Math.round((value / maxValue) * 100);
+  }
+
   useEffect(() => {
     fetchPieData();
     fetchAndAdaptAlerts().then(setAlerts);
+    fetchMetrics().then(setMetrics);
   }, []);
 
     return (
       <div className="flex flex-col min-h-screen">
         <main className="flex-1 p-4 md:p-6 overflow-y-auto overflow-x-hidden">
           <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {metrics.map((metric) => (
+            {Metrics.map((metric) => (
               <MetricCard key={metric.title} {...metric} />
             ))}
           </div>
