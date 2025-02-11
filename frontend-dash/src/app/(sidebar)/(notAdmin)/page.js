@@ -2,11 +2,13 @@ import { MetricCard } from "@/components/metric-card"
 import { AlertsTable } from "@/components/alerts-table"
 import { Chart } from "@/components/chart"
 import { PieChartComponent } from "@/components/pie-chart"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import axios from "axios";
+import Cookies from "js-cookie";
 export default function Home() {
 
   const [assetClassData, setAssetClassData] = useState([]);
+  const [ userData, setUserData ] = useState([]);
   const [investmentTypeData, setInvestmentTypeData] = useState([]);
   const [ Alerts, setAlerts ] = useState([]);
   const [ Metrics, setMetrics ] = useState([]);
@@ -19,7 +21,11 @@ export default function Home() {
   const fetchPieData = async () => {
     try {
       // Fetch the data from the backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValueAssetClassInvestmentType`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValueAssetClassInvestmentType`, {
+        headers: {
+          Authorization: `Bearer ${userData.auth_token}`
+        },
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -43,6 +49,10 @@ export default function Home() {
       // Realizar la solicitud GET al endpoint
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/alerta/latestAlta`, {
         method: 'GET',
+      },{
+        headers: {
+          Authorization: `Bearer ${userData.auth_token}`
+        },
       });
   
       if (!response.ok) {
@@ -100,10 +110,18 @@ export default function Home() {
       const fecha_fin = new Date(year, month + 1, 0).toISOString().split('T')[0];
   
       // Llamar al endpoint /api/v1/Actividad/getSumByTypeAndDateRange
-      const actividadResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/Actividad/getSumByTypeAndDateRange`, {
-        fecha_inicio,
-        fecha_fin,
-      });
+      const actividadResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/Actividad/getSumByTypeAndDateRange`,
+        {
+          fecha_inicio,
+          fecha_fin,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userData.auth_token}`
+          },
+        }
+      );
   
       // Extraer los totales de la respuesta
       const { Deposit, "Transfer In": TransferIn, Withdrawal, "Transfer Out": TransferOut } =
@@ -114,7 +132,11 @@ export default function Home() {
       const withdrawalsTotal = Withdrawal + TransferOut;
   
       // Llamar al endpoint /api/v1/holding/getLastCash
-      const cashResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getLastCash`);
+      const cashResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getLastCash`, {
+        headers: {
+          Authorization: `Bearer ${userData.auth_token}`
+        },
+      });
       const cashValue = cashResponse.data.message;
   
       // Formatear los datos en el formato esperado por el frontend
@@ -141,7 +163,11 @@ export default function Home() {
   // Función para obtener los datos históricos del backend
   const fetchHistoricalData = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValuePerFecha`, { method: 'GET' });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/holding/getTotalValuePerFecha`, { method: 'GET' }, {
+        headers: {
+          Authorization: `Bearer ${userData.auth_token}`
+        },
+      });
       const data = await response.json();
       if (data.success) {
         return data.total_value; // Devuelve el array de datos históricos
@@ -228,6 +254,8 @@ export default function Home() {
     };
 
     useEffect(() => {
+      const userData = JSON.parse(Cookies.get("user_data") || "{}");
+      setUserData(userData);
       fetchPieData();
       fetchAndAdaptAlerts().then(setAlerts);
       fetchMetrics().then(setMetrics);
